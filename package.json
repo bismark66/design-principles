@@ -1,0 +1,17 @@
+{
+  "name": "design-principles",
+  "version": "1.0.0",
+  "description": "A well-researched guide to design principles",
+  "license": "ISC",
+  "author": "Bismark Agyare",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
