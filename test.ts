@@ -11,6 +11,17 @@ import { SmsService } from "./creational/factory-principle/notification.example/
 import { PaymentFactory } from "./creational/factory-principle/payment.example/factory";
 import { MtnMomoPayment } from "./creational/factory-principle/payment.example/services/mtn-momo.payment";
 import { StripePayment } from "./creational/factory-principle/payment.example/services/stripe";
+import { Auth } from "./behavioural/chain-of-responsibility/ordering-system/chains/auth";
+import { Validate } from "./behavioural/chain-of-responsibility/ordering-system/chains/validation";
+import { Order } from "./behavioural/chain-of-responsibility/ordering-system/chains/order";
+// import { OrderRequest } from "./behavioural/chain-of-responsibility/ordering-system/types/order-request";
+
+// Define OrderRequest interface locally since the module doesn't exist
+interface OrderRequest {
+  isAuthenticated: boolean;
+  isValid: boolean;
+  orderDataValid: boolean;
+}
 
 async function testLogistics(logistics: Logististics) {
   await logistics.planDelivery();
@@ -48,6 +59,24 @@ const paypalAdaptor: PaymentAdapterGateway = new PaypalAdaptor(legacyPaypal);
 const legacyLogger = new LegacyLogger();
 const loggerAdapter = new LoggerAdapter(legacyLogger);
 
+// Simulate a request
+const orderRequest: OrderRequest = {
+  isAuthenticated: true,
+  isValid: true,
+  orderDataValid: true,
+};
+
+const auth = new Auth();
+const validate = new Validate();
+const order = new Order();
+
+auth.setNext(validate).setNext(order);
+
+async function testOrderingSystem() {
+  console.log("herewww");
+  return auth.handle(orderRequest);
+}
+
 export function main() {
   testLogistics(seaLogistics);
   testNotification(emailService);
@@ -56,4 +85,5 @@ export function main() {
   testPayment(mtnMomoPayment);
   testAdapter(paypalAdaptor);
   testLogger(loggerAdapter);
+  testOrderingSystem();
 }
