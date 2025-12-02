@@ -14,6 +14,9 @@ import { StripePayment } from "./creational/factory-principle/payment.example/se
 import { Auth } from "./behavioural/chain-of-responsibility/ordering-system/chains/auth";
 import { Validate } from "./behavioural/chain-of-responsibility/ordering-system/chains/validation";
 import { Order } from "./behavioural/chain-of-responsibility/ordering-system/chains/order";
+import { DebugLogger } from "./behavioural/chain-of-responsibility/error-logging-system/loggers/debug-logger";
+import { ErrorLogger } from "./behavioural/chain-of-responsibility/error-logging-system/loggers/error-logger";
+import { InfoLogger } from "./behavioural/chain-of-responsibility/error-logging-system/loggers/info-logger";
 // import { OrderRequest } from "./behavioural/chain-of-responsibility/ordering-system/types/order-request";
 
 // Define OrderRequest interface locally since the module doesn't exist
@@ -21,6 +24,13 @@ interface OrderRequest {
   isAuthenticated: boolean;
   isValid: boolean;
   orderDataValid: boolean;
+}
+
+// Define LogRequest interface locally since the module doesn't exist
+interface LogRequest {
+  isCritical: number;
+  isDebug: number;
+  isInfo: number;
 }
 
 async function testLogistics(logistics: Logististics) {
@@ -59,6 +69,8 @@ const paypalAdaptor: PaymentAdapterGateway = new PaypalAdaptor(legacyPaypal);
 const legacyLogger = new LegacyLogger();
 const loggerAdapter = new LoggerAdapter(legacyLogger);
 
+// chain of responsibility tests
+
 // Simulate a request
 const orderRequest: OrderRequest = {
   isAuthenticated: true,
@@ -66,17 +78,31 @@ const orderRequest: OrderRequest = {
   orderDataValid: true,
 };
 
+const logRequest: LogRequest = {
+  isCritical: 1,
+  isDebug: 1,
+  isInfo: 1,
+};
+
 const auth = new Auth();
 const validate = new Validate();
 const order = new Order();
 
+const debugLog = new DebugLogger();
+const errLog = new ErrorLogger();
+const infoLog = new InfoLogger();
+
 auth.setNext(validate).setNext(order);
+debugLog.setNext(errLog).setNext(infoLog);
 
 async function testOrderingSystem() {
   console.log("herewww");
   return auth.handle(orderRequest);
 }
 
+async function testLoggingSystem() {
+  return debugLog.log(logRequest);
+}
 export function main() {
   testLogistics(seaLogistics);
   testNotification(emailService);
@@ -86,4 +112,5 @@ export function main() {
   testAdapter(paypalAdaptor);
   testLogger(loggerAdapter);
   testOrderingSystem();
+  testLoggingSystem();
 }
