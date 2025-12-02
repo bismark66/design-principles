@@ -1,4 +1,4 @@
-import { PaymentGateway, CreatePaymentGatewayFactory } from "./interface";
+import { PaymentGateway } from "./interface";
 
 abstract class PaymentFactory {
   abstract createPaymentGateWay(): Promise<PaymentGateway>;
